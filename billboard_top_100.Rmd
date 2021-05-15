@@ -42,7 +42,7 @@ billboard_long <- billboard %>%
     values_to = "Rang",
     names_prefix = "wk",
     values_drop_na = TRUE
-  )
+    )
 billboard_long 
 ```
 
@@ -53,7 +53,7 @@ billboard_long_d <- billboard_long %>%
          Einstiegsdatum = date.entered,
          Folgewoche = Woche,
          Platzierung = Rang
-  )
+        )
 billboard_long_d
 ```
 
@@ -61,7 +61,7 @@ billboard_long_d
 billboard_long_d$Folgewoche <- as.double(billboard_long_d$Folgewoche)
 
 billboard_long_d_1 <- billboard_long_d %>% 
-  mutate(Datum = Einstiegsdatum + (Folgewoche - 1) * 7)
+        mutate(Datum = Einstiegsdatum + (Folgewoche - 1) * 7)
 billboard_long_d_1
 ```
 
@@ -69,10 +69,10 @@ Schon sehr nah am Datenziel des Projektes
 
 ```{r, message=FALSE}
 billboard_long_d_final <- billboard_long_d_1 %>% 
-  group_by(Interpret, Song, Datum, Platzierung) %>%
-  summarize(Anzahl = n()) %>% 
-  filter(Datum >= as.Date("2000-01-01"), Datum <= as.Date("2000-12-31") & Platzierung == 1) %>% 
-  select(- Anzahl, -Platzierung)
+        group_by(Interpret, Song, Datum, Platzierung) %>%
+        summarize(Anzahl = n()) %>% 
+        filter(Datum >= as.Date("2000-01-01"), Datum <= as.Date("2000-12-31") & Platzierung == 1) %>% 
+        select(- Anzahl, -Platzierung)
 billboard_long_d_final
 ```
 
@@ -82,8 +82,8 @@ billboard_long_d_final <- billboard_long_d_final %>%
     mutate(
         first = first(Datum),
         last =last(Datum)) %>% 
-  group_by(Interpret, Song, first, last) %>% 
-  summarise(Anzahl = n())
+    group_by(Interpret, Song, first, last) %>% 
+    summarise(Anzahl = n())
 
 billboard_long_d_final
 ```
@@ -97,12 +97,12 @@ Interaktive Tabelle mit allen 2000 veröffentlichten Songs die in diesem Jahr Pl
 ```{r}
 reactable(
   billboard_long_d_final,
-    defaultPageSize = 60,
-    height = 465,
-    filterable = FALSE,
-    striped = TRUE,
-    highlight = TRUE,
-    bordered = TRUE,
+      defaultPageSize = 60,
+      height = 465,
+      filterable = FALSE,
+      striped = TRUE,
+      highlight = TRUE,
+      bordered = TRUE,
   theme = reactableTheme(
     stripedColor = "whitesmoke",
     highlightColor = "#c5c7c7"
@@ -158,8 +158,8 @@ ggplot(billboard_long_d_final,
         geom_text(aes(label = Anzahl, y=pos), size = 3, color="White") +
         coord_flip() 
 
-
 ```   
+
 ```{r echo = FALSE,fig.width = 10}
 billboard_long_final<- billboard_long_final %>% 
 mutate(Gesamt = paste(Interpret, Song, sep = " - ")) %>% 
@@ -180,9 +180,7 @@ theme_bw() +
         scale_fill_viridis(discrete = TRUE)  
 ```
 
-Der finale Plot. Fast genau so wie wir ihn haben wollten. Wehrmutstropfen ist der Konflikt zwischen Savage Garden und Mariah Carey. Aber sowas kann ich auch später noch klären.
-
-```{r echo = FALSE,fig.width = 12, fig.height=5.5}
+```{r echo = FALSE}
 #Etwas Händisches Aufbereiten der Namen. Teilweise waren die Songnamen einfach abgeschnitten.
 
 billboard_long_final$Gesamt[billboard_long_final$Gesamt == "Aguilera, Christina - What A Girl Wants"] <- "Christina Aguilera - What A Girl Wants"
@@ -197,8 +195,11 @@ billboard_long_final$Gesamt[billboard_long_final$Gesamt == "Aguilera, Christina 
 
 billboard_long_final$Gesamt[billboard_long_final$Gesamt == "Destiny's Child - Independent Women Pa..."] <- "Destiny's Child - Independent Women Part 1"
 
+```
 
+Der finale Plot. Fast genau so wie wir ihn haben wollten. Wehrmutstropfen ist der Konflikt zwischen Savage Garden und Mariah Carey. Aber sowas kann ich auch später noch klären.
 
+```{r echo = FALSE,fig.width = 12, fig.height=5.5}
 
 ggplot(billboard_long_final, aes(x=value, y=reorder(Gesamt, desc(value)), color=Datum)) +
         geom_line(aes(group = Gesamt)) + 
